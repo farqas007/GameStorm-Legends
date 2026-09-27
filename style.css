@@ -1,0 +1,3778 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+
+    margin: 0;
+    padding: 0;
+
+    overflow: hidden;
+
+    background: #000;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#video {
+    position: relative;
+
+    width: 100vw;
+    height: 100vh;
+
+    overflow: hidden;
+
+    background: #000;
+}
+
+/* =========================================
+   GLOBAL
+========================================= */
+
+.bg {
+    position: absolute;
+    inset: 0;
+
+    background:
+        radial-gradient(
+            circle at 50% 45%,
+            #15152f 0%,
+            #070713 45%,
+            #000 100%
+        );
+
+    z-index: 0;
+}
+
+.scanlines {
+    position: absolute;
+    inset: 0;
+
+    background:
+        repeating-linear-gradient(
+            0deg,
+            transparent 0px,
+            transparent 5px,
+            rgba(100, 80, 255, .035) 6px
+        );
+
+    pointer-events: none;
+
+    z-index: 200;
+}
+
+/* =========================================
+   SCENES
+========================================= */
+
+.scene {
+    position: absolute;
+    inset: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    opacity: 0;
+    visibility: hidden;
+
+    overflow: hidden;
+
+    z-index: 10;
+}
+
+.scene.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* =========================================
+   INTRO
+========================================= */
+
+.scene-intro {
+    background: #010107;
+}
+
+/* Hacker room */
+
+.hacker-background {
+    position: absolute;
+    inset: 0;
+
+    background-image: url("assets/hacker-room.png");
+
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+
+    z-index: 1;
+
+    filter:
+        brightness(.72)
+        contrast(1.15)
+        saturate(1.25);
+
+    animation: hackerIntroZoom 5s ease-out forwards;
+}
+
+.hacker-background::after {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    background:
+        radial-gradient(
+            circle at 50% 40%,
+            transparent 20%,
+            rgba(25, 0, 80, .35) 55%,
+            rgba(0, 0, 0, .75) 100%
+        );
+
+    pointer-events: none;
+}
+
+/* Dark vignette */
+
+.scene-intro::after {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    background:
+        radial-gradient(
+            ellipse at center,
+            transparent 15%,
+            rgba(0, 0, 10, .15) 45%,
+            rgba(0, 0, 0, .78) 100%
+        );
+
+    pointer-events: none;
+
+    z-index: 4;
+}
+
+/* =========================================
+   NEON BORDER
+========================================= */
+
+.neon-border {
+    position: absolute;
+
+    inset: 2.5% 4%;
+
+    border: 2px solid #8d5cff;
+
+    box-shadow:
+        0 0 7px #8d5cff,
+        0 0 20px #613dff,
+        0 0 45px rgba(85, 45, 255, .65),
+        inset 0 0 25px rgba(85, 45, 255, .28);
+
+    z-index: 12;
+
+    animation:
+        borderGlow
+        1.1s
+        ease-in-out
+        infinite
+        alternate;
+}
+
+.neon-border::before,
+.neon-border::after {
+    content: "";
+
+    position: absolute;
+
+    width: 38%;
+    height: 3px;
+
+    background: #4edcff;
+
+    box-shadow:
+        0 0 8px #4edcff,
+        0 0 20px #4edcff;
+
+    animation:
+        borderSweep
+        1.8s
+        linear
+        infinite;
+}
+
+.neon-border::before {
+    top: -2px;
+    left: 2%;
+}
+
+.neon-border::after {
+    bottom: -2px;
+    right: 2%;
+
+    animation-delay: .9s;
+}
+
+/* =========================================
+   CHANNEL TEXT
+========================================= */
+.intro-channel {
+    position: absolute;
+
+    left: 50%;
+    bottom: 8%;
+
+    transform: translateX(-50%);
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    white-space: nowrap;
+
+    writing-mode: horizontal-tb;
+    text-orientation: mixed;
+
+    z-index: 14;
+
+    opacity: 0;
+
+    animation: channelIn .9s .9s cubic-bezier(.16, 1, .3, 1) forwards;
+}
+
+.channel-url {
+    color: #5ed9ff;
+
+    font-size: clamp(12px, 2.8vw, 30px);
+
+    font-weight: 800;
+
+    letter-spacing: .08em;
+
+    text-shadow:
+        0 0 6px #36caff,
+        0 0 18px #355cff;
+}
+
+.channel-follow {
+    margin-top: 7px;
+
+    color: #ff54e9;
+
+    font-size: clamp(7px, 1.5vw, 17px);
+
+    font-weight: 800;
+
+    letter-spacing: .16em;
+
+    text-shadow:
+        0 0 7px #ff2de2,
+        0 0 18px #9c2cff;
+
+    animation:
+        channelGlow
+        1.4s
+        ease-in-out
+        infinite
+        alternate;
+}
+
+/* =========================================
+   LIGHTNING IMAGE
+========================================= */
+
+.intro-lightning {
+    position: absolute;
+    inset: 0;
+
+    background-image: url("assets/lightning.png");
+    background-size: cover;
+    background-position: center;
+
+    mix-blend-mode: screen;
+
+    opacity: .45;
+
+    z-index: 3;
+
+    animation: lightningImageFlash 5s ease-out forwards;
+}
+/* Extra coded lightning */
+
+.lightning {
+    position: absolute;
+
+    width: 3px;
+    height: 65%;
+
+    background: #fff;
+
+    box-shadow:
+        0 0 8px #4cdcff,
+        0 0 20px #4c6dff,
+        0 0 45px #7b32ff;
+
+    opacity: .6;
+
+    z-index: 8;
+
+    transform-origin: top;
+
+    pointer-events: none;
+}
+
+.lightning-1 {
+    left: 18%;
+    top: -8%;
+
+    transform:
+        rotate(23deg)
+        skewX(-20deg);
+
+    animation:
+        lightningFlash
+        .7s
+        infinite;
+}
+
+.lightning-2 {
+    right: 20%;
+    bottom: -8%;
+
+    transform:
+        rotate(-28deg)
+        skewX(20deg);
+
+    animation:
+        lightningFlash
+        .9s
+        .3s
+        infinite;
+}
+
+/* =========================================
+   GAMESTORM LOGO
+========================================= */
+
+.intro-logo {
+    position: absolute;
+
+    left: 50%;
+    top: 49%;
+
+    transform:
+        translate(-50%, -50%)
+        rotate(-7deg)
+        scale(.5);
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+
+    z-index: 16;
+
+    opacity: 0;
+
+    animation:
+    introLogo
+    2.2s
+    .65s
+    cubic-bezier(.16, 1, .3, 1)
+    forwards;
+}
+
+.intro-logo span {
+    display: block;
+
+    white-space: nowrap;
+
+    font-size: clamp(42px, 10vw, 120px);
+
+    font-weight: 1000;
+
+    line-height: .82;
+
+    letter-spacing: .02em;
+
+    color: #58eaff;
+
+    text-shadow:
+        0 0 3px #fff,
+        0 0 9px #38d4ff,
+        0 0 22px #2a75ff,
+        0 0 45px #653cff,
+        0 0 80px rgba(101, 60, 255, .7);
+}
+
+.intro-logo span:last-child {
+    color: #c14cff;
+
+    text-shadow:
+        0 0 3px #fff,
+        0 0 9px #ff59ef,
+        0 0 22px #bf2cff,
+        0 0 50px #7027ff,
+        0 0 85px rgba(112, 39, 255, .7);
+}
+
+/* =========================================
+   PARTICLES
+========================================= */
+
+.intro-particles {
+    position: absolute;
+    inset: 0;
+
+    z-index: 13;
+
+    background-image:
+        radial-gradient(
+            circle,
+            rgba(255,255,255,.9) 1px,
+            transparent 2px
+        ),
+        radial-gradient(
+            circle,
+            rgba(119,61,255,.9) 1px,
+            transparent 2px
+        ),
+        radial-gradient(
+            circle,
+            rgba(50,207,255,.8) 1px,
+            transparent 2px
+        );
+
+    background-size:
+        85px 95px,
+        125px 135px,
+        175px 155px;
+
+    background-position:
+        20px 30px,
+        60px 20px,
+        100px 80px;
+
+    opacity: .35;
+
+    animation:
+        particlesMove
+        4s
+        linear
+        infinite;
+
+    pointer-events: none;
+}
+
+/* =========================================
+   INTRO BLACKOUT
+========================================= */
+
+.intro-blackout {
+    position: absolute;
+    inset: 0;
+
+    background: #000;
+
+    z-index: 30;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    animation:
+        introBlackout
+        5s
+        linear
+        forwards;
+}
+
+/* =========================================
+   PURPLE ENERGY
+========================================= */
+
+.intro-energy {
+    position: absolute;
+
+    width: 150%;
+    height: 70%;
+
+    left: -25%;
+    top: 38%;
+
+    background:
+        radial-gradient(
+            ellipse,
+            rgba(188, 60, 255, .9) 0%,
+            rgba(102, 30, 255, .7) 20%,
+            rgba(42, 22, 130, .35) 45%,
+            transparent 70%
+        );
+
+    filter: blur(35px);
+
+    opacity: 0;
+
+    z-index: 31;
+
+    animation:
+        introEnergy
+        5s
+        linear
+        forwards;
+
+    pointer-events: none;
+}
+
+/* =========================================
+   HAND
+========================================= */
+
+.intro-hand {
+    position: absolute;
+
+    width: 48%;
+    max-width: 520px;
+
+    left: 50%;
+    top: 52%;
+
+    transform:
+        translate(-50%, -50%)
+        scale(.55);
+
+    object-fit: contain;
+
+    filter:
+        brightness(1.2)
+        contrast(1.15)
+        drop-shadow(0 0 8px #fff)
+        drop-shadow(0 0 25px #b52cff)
+        drop-shadow(0 0 55px #743cff);
+
+    opacity: 0;
+
+    z-index: 35;
+
+    animation:
+        introHand
+        5s
+        linear
+        forwards;
+
+    pointer-events: none;
+}
+
+/* =========================================
+   LIKE
+========================================= */
+
+.like-text {
+    color: #d9f8ff;
+
+    font-size: clamp(55px, 12vw, 150px);
+
+    font-weight: 900;
+
+    letter-spacing: .06em;
+
+    text-align: center;
+
+    text-shadow:
+        0 0 8px #fff,
+        0 0 20px #36baff,
+        0 0 50px #2878ff,
+        0 0 90px #743cff;
+
+    z-index: 10;
+
+    opacity: 0;
+
+    animation:
+        likeTextIn
+        1.8s
+        cubic-bezier(.16, 1, .3, 1)
+        forwards;
+}
+.share-text {
+    color: #d9f8ff;
+
+    font-size: clamp(55px, 12vw, 150px);
+
+    font-weight: 900;
+
+    letter-spacing: .06em;
+
+    transform: none;
+
+    text-shadow:
+        0 0 8px #fff,
+        0 0 20px #36baff,
+        0 0 50px #2878ff;
+
+    z-index: 10;
+}
+
+.share-text {
+    opacity: 0;
+
+    animation:
+        shareTextIn
+        1.8s
+        cubic-bezier(.16, 1, .3, 1)
+        forwards;
+}
+
+.energy {
+    position: absolute;
+
+    width: 120px;
+    height: 120px;
+
+    border-radius: 50%;
+
+    background: #9c4cff;
+
+    filter: blur(30px);
+
+    animation:
+    likeEnergy
+    2s
+    ease-out
+    forwards;
+}
+
+/* =========================================
+   SHARE
+========================================= */
+
+.burst {
+    position: absolute;
+
+    width: 160px;
+    height: 160px;
+
+    border-radius: 50%;
+
+    border: 8px solid #6c8cff;
+
+    box-shadow:
+        0 0 30px #6c8cff,
+        0 0 70px #4c40ff;
+
+    animation:
+        burst
+        1s
+        infinite;
+}
+
+/* =========================================
+   YOUTUBE
+========================================= */
+
+.youtube-circle {
+    position: absolute;
+
+    width: 58%;
+    aspect-ratio: 1;
+
+    border-radius: 50%;
+
+    border: 5px solid #ff1744;
+
+    box-shadow:
+        0 0 15px #ff1744,
+        0 0 50px #ff1744,
+        inset 0 0 40px #ff1744;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+   animation:
+    youtubeReveal
+    6s
+    ease-out
+    forwards;
+}
+
+.youtube-button {
+    width: 70%;
+    aspect-ratio: 1;
+
+    border-radius: 18%;
+
+    background: #ff163c;
+
+    border: 4px solid white;
+
+    box-shadow:
+        0 0 15px #fff,
+        0 0 40px #ff1645;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    animation:
+    youtubeButtonPulse
+    1.2s
+    ease-in-out
+    infinite
+    alternate;
+}
+
+.play {
+    width: 0;
+    height: 0;
+
+    border-top: 32px solid transparent;
+    border-bottom: 32px solid transparent;
+    border-left: 55px solid white;
+
+    margin-left: 12px;
+}
+
+.subscribe-text {
+    position: absolute;
+
+    transform: none;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+
+    color: white;
+
+    font-size: clamp(25px, 6vw, 75px);
+
+    font-weight: 900;
+
+    text-align: center;
+
+    text-shadow:
+        0 0 10px #ff1744,
+        0 0 25px #ff1744;
+
+    opacity: 0;
+
+    animation:
+        subscribeReveal
+        1.4s
+        1.1s
+        cubic-bezier(.16, 1, .3, 1)
+        forwards;
+}
+
+.subscribe-text span {
+    font-size: .38em;
+
+    letter-spacing: .15em;
+}
+
+/* =========================================
+   MOUSE
+========================================= */
+
+.target {
+    position: absolute;
+
+    width: 55%;
+    aspect-ratio: 1;
+
+    opacity: 0;
+
+animation:
+    targetReveal
+    4s
+    ease-out
+    forwards;
+}
+
+.target-ring {
+    position: absolute;
+    inset: 0;
+
+    border: 3px solid #29aaff;
+
+    border-radius: 50%;
+
+    box-shadow:
+        0 0 15px #29aaff;
+
+    animation:
+        ringPulse
+        2s
+        infinite;
+}
+
+.target-ring:nth-child(2) {
+    inset: 18%;
+    animation-delay: .3s;
+}
+
+.target-ring:nth-child(3) {
+    inset: 36%;
+    animation-delay: .6s;
+}
+
+.target-arrow {
+    position: absolute;
+
+    left: 42%;
+    top: 42%;
+
+    color: white;
+
+    font-size: 45px;
+
+    transform: rotate(-35deg);
+
+    text-shadow:
+        0 0 15px #29aaff;
+}
+
+.mouse {
+    position: absolute;
+
+    width: 24%;
+    height: 42%;
+
+    right: -5%;
+    bottom: 0;
+
+    background: white;
+
+    border-radius: 45% 45% 20% 20%;
+
+    box-shadow:
+        0 0 30px white;
+
+    transform: rotate(-15deg);
+
+    animation:
+    mouseEnter
+    4s
+    cubic-bezier(.16, 1, .3, 1)
+    forwards;
+}
+
+
+/* =========================================
+   GAMING HACKER ROOM
+========================================= */
+
+.scene-gaming.active {
+    animation:
+        gamingRoomIn
+        3s
+        ease-out
+        forwards;
+}
+/* =========================================
+   WALL
+========================================= */
+
+.gaming-wall {
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        radial-gradient(
+            circle at 50% 35%,
+            rgba(80, 60, 255, .28),
+            transparent 42%
+        ),
+        linear-gradient(
+            180deg,
+            #05051a 0%,
+            #08081b 55%,
+            #020207 100%
+        );
+
+    z-index: 1;
+}
+
+
+/* =========================================
+   BLUE / PURPLE ROOM GLOW
+========================================= */
+
+.gaming-glow {
+    position: absolute;
+
+    left: 50%;
+    top: 25%;
+
+    width: 65%;
+    height: 50%;
+
+    transform: translateX(-50%);
+
+    background:
+        radial-gradient(
+            ellipse,
+            rgba(60, 100, 255, .55),
+            rgba(120, 30, 255, .22) 40%,
+            transparent 72%
+        );
+
+    filter: blur(55px);
+
+    opacity: .9;
+
+    z-index: 2;
+
+    pointer-events: none;
+
+    animation: roomGlow 2.5s ease-in-out infinite alternate;
+}
+
+
+/* =========================================
+   MONITORS
+========================================= */
+
+.monitor {
+    position: absolute;
+
+    width: 25%;
+    height: 24%;
+
+    background: #05050d;
+
+    border: 4px solid #5266ff;
+
+    border-radius: 8px;
+
+    box-shadow:
+        0 0 12px #5266ff,
+        0 0 30px rgba(70, 80, 255, .65),
+        inset 0 0 20px rgba(50, 60, 255, .35);
+
+    opacity: 0;
+
+    z-index: 5;
+
+    overflow: visible;
+}
+
+/* CENTER MONITOR */
+
+.monitor-center {
+    left: 50%;
+    top: 19%;
+
+    width: 32%;
+    height: 30%;
+
+    transform:
+    translateX(-50%)
+    translateY(0)
+    scale(1);
+
+    border-color: #6b7dff;
+}
+
+
+/* LEFT MONITOR */
+
+.monitor-left {
+    left: 13%;
+    top: 27%;
+
+    transform:
+    perspective(500px)
+    rotateY(12deg)
+    translateY(0)
+    scale(1);
+}
+
+
+/* RIGHT MONITOR */
+
+.monitor-right {
+    right: 13%;
+    top: 27%;
+
+    transform:
+    perspective(500px)
+    rotateY(-12deg)
+    translateY(0)
+    scale(1);
+}
+
+
+/* =========================================
+   MONITOR SCREENS
+========================================= */
+
+.monitor-screen {
+    position: absolute;
+
+    inset: 7%;
+
+    background:
+        radial-gradient(
+            circle at 50% 50%,
+            rgba(90, 70, 255, .9),
+            rgba(20, 30, 100, .75) 35%,
+            #020314 75%
+        );
+
+    overflow: hidden;
+
+    animation: screenGlow 1.8s ease-in-out infinite alternate;
+}
+
+
+/* CODE LINES */
+
+.monitor-screen::before {
+    content: "";
+
+    position: absolute;
+
+    inset: 12%;
+
+    background:
+        repeating-linear-gradient(
+            180deg,
+            rgba(70, 210, 255, .85) 0px,
+            rgba(70, 210, 255, .85) 2px,
+            transparent 2px,
+            transparent 10px
+        );
+
+    opacity: .65;
+
+    filter: drop-shadow(0 0 5px #29caff);
+}
+
+
+/* PURPLE CENTER GLOW */
+
+.monitor-screen::after {
+    content: "";
+
+    position: absolute;
+
+    width: 45%;
+    height: 45%;
+
+    left: 27%;
+    top: 25%;
+
+    border-radius: 50%;
+
+    background: #8d35ff;
+
+    filter: blur(25px);
+
+    opacity: .55;
+}
+
+
+/* =========================================
+   MONITOR STANDS
+========================================= */
+
+.monitor-stand {
+    position: absolute;
+
+    left: 50%;
+    bottom: -18%;
+
+    width: 15%;
+    height: 20%;
+
+    transform: translateX(-50%);
+
+    background: #080812;
+
+    box-shadow:
+        0 0 10px rgba(80, 90, 255, .35);
+
+    z-index: -1;
+}
+
+.monitor-stand::after {
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+    bottom: -15%;
+
+    width: 220%;
+
+    height: 8px;
+
+    transform: translateX(-50%);
+
+    border-radius: 20px;
+
+    background: #11112a;
+
+    box-shadow:
+        0 0 8px #5361ff;
+}
+
+
+/* =========================================
+   DESK
+========================================= */
+
+.gaming-desk {
+    position: absolute;
+
+    left: 50%;
+    bottom: 19%;
+
+    width: 78%;
+    height: 7%;
+
+    transform: translateX(-50%);
+
+    background:
+        linear-gradient(
+            180deg,
+            #15152c,
+            #05050d
+        );
+
+    border-top: 3px solid #5968ff;
+
+    box-shadow:
+        0 0 12px #4355ff,
+        0 0 30px rgba(50, 70, 255, .55);
+
+    z-index: 8;
+}
+
+.gaming-desk::before {
+    content: "";
+
+    position: absolute;
+
+    left: 5%;
+    right: 5%;
+    bottom: -3px;
+
+    height: 3px;
+
+    background: #b02cff;
+
+    box-shadow:
+        0 0 8px #b02cff,
+        0 0 20px #8d2cff;
+}
+
+.gaming-desk::after {
+    content: "";
+
+    position: absolute;
+
+    left: 4%;
+    right: 4%;
+
+    bottom: -300px;
+
+    height: 300px;
+
+    border-left: 5px solid #0c0c1b;
+    border-right: 5px solid #0c0c1b;
+
+    box-shadow:
+        inset 0 0 25px rgba(60, 70, 255, .15);
+}
+
+
+/* =========================================
+   KEYBOARD
+========================================= */
+
+.keyboard {
+    position: absolute;
+
+    left: 50%;
+    bottom: 22%;
+
+    width: 18%;
+    height: 3.5%;
+
+    transform:
+        translateX(-50%)
+        perspective(300px)
+        rotateX(35deg);
+
+    background:
+        repeating-linear-gradient(
+            90deg,
+            #111126 0px,
+            #111126 9px,
+            #29294b 10px,
+            #111126 11px
+        );
+
+    border: 2px solid #5266ff;
+
+    border-radius: 4px;
+
+    box-shadow:
+        0 0 8px #5266ff,
+        0 0 20px rgba(70, 80, 255, .65);
+
+    z-index: 12;
+}
+
+
+/* =========================================
+   GAMING CHAIR
+========================================= */
+
+.chair {
+    position: absolute;
+
+    left: 50%;
+    bottom: -5%;
+
+    width: 230px;
+    height: 360px;
+
+    transform: translateX(-50%);
+
+    background:
+        linear-gradient(
+            90deg,
+            #030307,
+            #111126 45%,
+            #030307
+        );
+
+    border-radius: 45% 45% 18% 18%;
+
+    box-shadow:
+        0 0 25px rgba(50, 60, 255, .3),
+        inset 0 0 35px #000;
+
+    opacity: 0;
+
+    z-index: 6;
+}
+
+/* CHAIR NEON EDGES */
+
+.chair::before {
+    content: "";
+
+    position: absolute;
+
+    inset: 5%;
+
+    border-radius: inherit;
+
+    border-left: 3px solid #334dff;
+    border-right: 3px solid #a832ff;
+
+    opacity: .7;
+
+    filter: blur(.5px);
+}
+
+
+/* CHAIR HEADREST */
+
+.chair::after {
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+    top: 5%;
+
+    width: 34%;
+    height: 20%;
+
+    transform: translateX(-50%);
+
+    border-radius: 50%;
+
+    background: #05050d;
+
+    border: 2px solid #4859ff;
+
+    box-shadow:
+        0 0 12px #3e54ff;
+}
+
+
+/* =========================================
+   HOODED HACKER
+========================================= */
+
+.hacker {
+    position: absolute;
+
+    left: 50%;
+    bottom: 5%;
+
+    width: 300px;
+    height: 330px;
+
+    transform:
+        translateX(-50%)
+        scale(.72);
+
+    transform-origin: bottom center;
+
+    opacity: 0;
+
+    z-index: 15;
+}
+
+/* =========================================
+   GAMING SCENE ACTIVE ANIMATIONS
+========================================= */
+
+.scene-gaming.active .monitor-left {
+    animation:
+        monitorLeftReveal
+        .9s
+        cubic-bezier(.16, 1, .3, 1)
+        forwards;
+}
+
+.scene-gaming.active .monitor-center {
+    animation:
+        monitorCenterReveal
+        .9s
+        .12s
+        cubic-bezier(.16, 1, .3, 1)
+        forwards;
+}
+
+.scene-gaming.active .monitor-right {
+    animation:
+        monitorRightReveal
+        .9s
+        .24s
+        cubic-bezier(.16, 1, .3, 1)
+        forwards;
+}
+
+.scene-gaming.active .chair {
+    animation:
+        chairReveal
+        1s
+        .45s
+        cubic-bezier(.16, 1, .3, 1)
+        forwards;
+}
+
+.scene-gaming.active .hacker {
+    animation:
+        hackerReveal
+        1.4s
+        .65s
+        cubic-bezier(.16, 1, .3, 1)
+        forwards;
+}
+
+/* =========================================
+   HOOD
+========================================= */
+
+.hacker-hood {
+    position: absolute;
+
+    left: 50%;
+    top: 0;
+
+    width: 145px;
+    height: 155px;
+
+    transform: translateX(-50%);
+
+    background:
+        radial-gradient(
+            ellipse at 50% 35%,
+            #151526 0%,
+            #05050b 48%,
+            #000 75%
+        );
+
+    border-radius:
+        50% 50% 38% 38%;
+
+    clip-path: polygon(
+        50% 0,
+        80% 12%,
+        100% 42%,
+        88% 90%,
+        65% 100%,
+        35% 100%,
+        12% 90%,
+        0 42%,
+        20% 12%
+    );
+
+    box-shadow:
+        0 0 20px rgba(45, 60, 255, .4),
+        inset 0 0 30px #000;
+}
+
+
+/* =========================================
+   DARK FACE
+========================================= */
+
+.hacker-face {
+    position: absolute;
+
+    left: 50%;
+    top: 42px;
+
+    width: 65px;
+    height: 82px;
+
+    transform: translateX(-50%);
+
+    background:
+        radial-gradient(
+            ellipse,
+            #000 0%,
+            #010106 70%,
+            #111126 100%
+        );
+
+    border-radius: 50%;
+
+    box-shadow:
+        0 0 18px rgba(50, 60, 255, .3);
+}
+
+
+/* =========================================
+   HACKER BODY
+========================================= */
+
+.hacker-body {
+    position: absolute;
+
+    left: 50%;
+    top: 105px;
+
+    width: 190px;
+    height: 225px;
+
+    transform: translateX(-50%);
+
+    background:
+        linear-gradient(
+            90deg,
+            #020207,
+            #101021 45%,
+            #020207
+        );
+
+    clip-path: polygon(
+        30% 0,
+        70% 0,
+        90% 18%,
+        100% 100%,
+        0 100%,
+        10% 18%
+    );
+
+    border-radius: 30px 30px 10px 10px;
+
+    box-shadow:
+        0 0 25px rgba(50, 60, 255, .25),
+        inset 0 0 35px #000;
+}
+
+
+/* =========================================
+   ARMS
+========================================= */
+
+.hacker-arm {
+    position: absolute;
+
+    top: 165px;
+
+    width: 70px;
+    height: 145px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #020207,
+            #101021,
+            #020207
+        );
+
+    border-radius: 30px;
+
+    box-shadow:
+        0 0 12px rgba(60, 70, 255, .25);
+}
+
+
+.hacker-arm-left {
+    left: 8px;
+
+    transform: rotate(18deg);
+}
+
+
+.hacker-arm-right {
+    right: 8px;
+
+    transform: rotate(-18deg);
+}
+
+
+/* =========================================
+   HACKER BLUE RIM LIGHT
+========================================= */
+
+.hacker::after {
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+    top: 2%;
+
+    width: 145px;
+    height: 155px;
+
+    transform: translateX(-50%);
+
+    border-radius: 50%;
+
+    border-left: 3px solid #4b72ff;
+    border-right: 3px solid #a537ff;
+
+    opacity: .8;
+
+    filter:
+        blur(.5px)
+        drop-shadow(0 0 8px #4b62ff);
+
+        animation: hackerRim 1.5s ease-in-out infinite alternate;
+}
+
+
+/* =========================================
+   GAMING ROOM VIGNETTE
+========================================= */
+
+.scene-gaming::after {
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        radial-gradient(
+            ellipse at center,
+            transparent 30%,
+            rgba(0, 0, 0, .25) 60%,
+            rgba(0, 0, 0, .85) 100%
+        );
+
+    pointer-events: none;
+
+    z-index: 50;
+}
+
+/* =========================================
+   FINAL LOGO
+========================================= */
+
+.logo {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+
+    transform: none;
+
+    font-size: clamp(45px, 11vw, 140px);
+
+    font-weight: 900;
+
+    line-height: .85;
+
+    letter-spacing: .02em;
+
+    color: #48eaff;
+
+    text-shadow:
+        0 0 8px #fff,
+        0 0 20px #1caeff,
+        0 0 45px #305dff,
+        0 0 80px #b52cff;
+
+    animation:
+    finalLogoReveal
+    3s
+    cubic-bezier(.16, 1, .3, 1)
+    forwards;
+}
+
+.logo span:last-child {
+    color: #bd52ff;
+}
+
+/* =========================================
+   FINAL LIGHTNING
+========================================= */
+
+.final-lightning {
+    position: absolute;
+    inset: 0;
+
+    background:
+        linear-gradient(
+            125deg,
+            transparent 44%,
+            rgba(80, 180, 255, .9) 45%,
+            transparent 46%
+        ),
+        linear-gradient(
+            55deg,
+            transparent 52%,
+            rgba(190, 70, 255, .8) 53%,
+            transparent 54%
+        );
+
+    filter: blur(1px);
+
+    opacity: 0;
+
+    animation:
+        finalLightning
+        7.15s
+        ease-out
+        forwards;
+}
+
+/* =========================================
+   ANIMATIONS
+========================================= */
+
+
+@keyframes hackerIntroZoom {
+    0% {
+        transform: scale(1.18);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes channelGlow {
+    from {
+        filter: brightness(.85);
+    }
+
+    to {
+        filter: brightness(1.35);
+    }
+}
+
+@keyframes channelIn {
+    0% {
+        opacity: 0;
+
+        transform:
+            translateX(-50%)
+            translateY(25px)
+            scale(.92);
+
+        filter: blur(8px);
+    }
+
+    55% {
+        opacity: 1;
+
+        transform:
+            translateX(-50%)
+            translateY(-3px)
+            scale(1.02);
+
+        filter: blur(0);
+    }
+
+    100% {
+        opacity: 1;
+
+        transform:
+            translateX(-50%)
+            translateY(0)
+            scale(1);
+
+        filter: blur(0);
+    }
+}
+
+@keyframes borderGlow {
+    from {
+        filter: brightness(.75);
+    }
+
+    to {
+        filter: brightness(1.45);
+    }
+}
+
+@keyframes borderSweep {
+    from {
+        transform: translateX(-40%);
+    }
+
+    to {
+        transform: translateX(260%);
+    }
+}
+
+@keyframes lightningImageFlash {
+    0%,
+    100% {
+        opacity: .2;
+    }
+
+    8% {
+        opacity: .85;
+    }
+
+    12% {
+        opacity: .25;
+    }
+
+    28% {
+        opacity: .7;
+    }
+
+    35% {
+        opacity: .25;
+    }
+}
+
+@keyframes lightningFlash {
+    0%,
+    100% {
+        opacity: .1;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    15% {
+        opacity: .15;
+    }
+
+    30% {
+        opacity: .85;
+    }
+
+    40% {
+        opacity: .1;
+    }
+}
+
+@keyframes likeTextIn {
+    0% {
+        opacity: 0;
+
+        transform:
+            scale(.35)
+            rotate(-8deg);
+
+        filter:
+            blur(15px)
+            brightness(2);
+    }
+
+    35% {
+        opacity: 1;
+
+        transform:
+            scale(1.15)
+            rotate(2deg);
+
+        filter:
+            blur(0)
+            brightness(1.6);
+    }
+
+    55% {
+        transform:
+            scale(.94)
+            rotate(-1deg);
+    }
+
+    72% {
+        transform:
+            scale(1.04)
+            rotate(0deg);
+    }
+
+    100% {
+        opacity: 1;
+
+        transform:
+            scale(1)
+            rotate(0deg);
+    }
+}
+
+@keyframes likeEnergy {
+    0% {
+        transform: scale(.2);
+        opacity: 0;
+    }
+
+    25% {
+        transform: scale(1);
+        opacity: .9;
+    }
+
+    55% {
+        transform: scale(1.8);
+        opacity: .45;
+    }
+
+    100% {
+        transform: scale(3.2);
+        opacity: 0;
+    }
+}
+
+@keyframes introLogo {
+    0% {
+        opacity: 0;
+
+        transform:
+            translate(-50%, -50%)
+            rotate(-14deg)
+            scale(.2);
+
+        filter:
+            blur(18px)
+            brightness(2);
+    }
+
+    25% {
+        opacity: 1;
+
+        transform:
+            translate(-50%, -50%)
+            rotate(-10deg)
+            scale(.38);
+
+        filter:
+            blur(4px)
+            brightness(1.8);
+    }
+
+    55% {
+        transform:
+            translate(-50%, -50%)
+            rotate(-6deg)
+            scale(.54);
+
+        filter:
+            blur(0)
+            brightness(1.35);
+    }
+
+    75% {
+        transform:
+            translate(-50%, -50%)
+            rotate(-7deg)
+            scale(.48);
+    }
+
+    100% {
+        opacity: 1;
+
+        transform:
+            translate(-50%, -50%)
+            rotate(-7deg)
+            scale(.5);
+
+        filter:
+            blur(0)
+            brightness(1);
+    }
+}
+
+@keyframes introBlackout {
+    0%,
+    57% {
+        opacity: 0;
+    }
+
+    59% {
+        opacity: 1;
+    }
+
+    63% {
+        opacity: 1;
+    }
+
+    66% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes introEnergy {
+    0%,
+    61% {
+        opacity: 0;
+        transform: scale(.45);
+    }
+
+    65% {
+        opacity: 1;
+        transform: scale(.75);
+    }
+
+    72% {
+        opacity: .85;
+        transform: scale(1.05);
+    }
+
+    82% {
+        opacity: .6;
+        transform: scale(1.35);
+    }
+
+    100% {
+        opacity: .25;
+        transform: scale(1.7);
+    }
+}
+
+@keyframes introHand {
+    0%,
+    63% {
+        opacity: 0;
+
+        transform:
+            translate(-50%, -50%)
+            scale(.35)
+            rotate(-12deg);
+
+        filter:
+            blur(15px)
+            brightness(1.5);
+    }
+
+    68% {
+        opacity: 1;
+
+        transform:
+            translate(-50%, -50%)
+            scale(.65)
+            rotate(-5deg);
+
+        filter:
+            blur(2px)
+            brightness(1.3);
+    }
+
+    78% {
+        opacity: 1;
+
+        transform:
+            translate(-50%, -50%)
+            scale(.88)
+            rotate(0deg);
+
+        filter:
+            blur(0)
+            brightness(1.15);
+    }
+
+    90% {
+        opacity: 1;
+
+        transform:
+            translate(-50%, -50%)
+            scale(.98)
+            rotate(2deg);
+    }
+
+    100% {
+        opacity: 0;
+
+        transform:
+            translate(-50%, -50%)
+            scale(1.08)
+            rotate(4deg);
+    }
+}
+
+@keyframes particlesMove {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(-80px);
+    }
+}
+
+@keyframes energyPulse {
+    50% {
+        transform: scale(1.8);
+        opacity: .3;
+    }
+}
+
+@keyframes burst {
+    0% {
+        transform: scale(.15);
+        opacity: 0;
+    }
+
+    20% {
+        transform: scale(.7);
+        opacity: 1;
+    }
+
+    45% {
+        transform: scale(1.25);
+        opacity: .75;
+    }
+
+    70% {
+        transform: scale(1.9);
+        opacity: .35;
+    }
+
+    100% {
+        transform: scale(2.6);
+        opacity: 0;
+    }
+}
+
+@keyframes youtubePulse {
+    50% {
+        transform: scale(1.08);
+    }
+}
+
+@keyframes ringPulse {
+    50% {
+        transform: scale(1.1);
+        opacity: .5;
+    }
+}
+
+@keyframes shareTextIn {
+    0% {
+        opacity: 0;
+
+        transform:
+            scale(.25)
+            rotate(8deg);
+
+        filter:
+            blur(18px)
+            brightness(2);
+    }
+
+    30% {
+        opacity: 1;
+
+        transform:
+            scale(1.18)
+            rotate(-2deg);
+
+        filter:
+            blur(0)
+            brightness(1.7);
+    }
+
+    50% {
+        transform:
+            scale(.92)
+            rotate(1deg);
+    }
+
+    70% {
+        transform:
+            scale(1.05)
+            rotate(0);
+    }
+
+    100% {
+        opacity: 1;
+
+        transform:
+            scale(1)
+            rotate(0);
+    }
+}
+
+@keyframes targetReveal {
+    0% {
+        opacity: 0;
+
+        transform:
+            scale(.2)
+            rotate(-90deg);
+
+        filter: blur(15px);
+    }
+
+    25% {
+        opacity: 1;
+
+        transform:
+            scale(1.15)
+            rotate(10deg);
+
+        filter: blur(0);
+    }
+
+    45% {
+        transform:
+            scale(.95)
+            rotate(-3deg);
+    }
+
+    65% {
+        transform:
+            scale(1.05)
+            rotate(0);
+    }
+
+    100% {
+        opacity: 1;
+
+        transform:
+            scale(1)
+            rotate(0);
+    }
+}
+
+@keyframes mouseEnter {
+    0% {
+        opacity: 0;
+
+        transform:
+            translateX(140%)
+            translateY(80%)
+            rotate(-35deg)
+            scale(.7);
+    }
+
+    35% {
+        opacity: 1;
+
+        transform:
+            translateX(-10%)
+            translateY(-5%)
+            rotate(-10deg)
+            scale(1.08);
+    }
+
+    60% {
+        transform:
+            translateX(3%)
+            translateY(2%)
+            rotate(-17deg)
+            scale(.98);
+    }
+
+    100% {
+        opacity: 1;
+
+        transform:
+            translateX(0)
+            translateY(0)
+            rotate(-15deg)
+            scale(1);
+    }
+}
+
+@keyframes logoPulse {
+    from {
+        filter: brightness(.8);
+    }
+
+    to {
+        filter: brightness(1.5);
+    }
+}
+
+@keyframes youtubeReveal {
+    0% {
+        opacity: 0;
+
+        transform:
+            scale(.25)
+            rotate(-25deg);
+
+        filter:
+            blur(15px)
+            brightness(2);
+    }
+
+    18% {
+        opacity: 1;
+
+        transform:
+            scale(1.12)
+            rotate(5deg);
+
+        filter:
+            blur(0)
+            brightness(1.5);
+    }
+
+    35% {
+        transform:
+            scale(.95)
+            rotate(-2deg);
+    }
+
+    50%,
+    100% {
+        transform:
+            scale(1)
+            rotate(0);
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes youtubeButtonPulse {
+    from {
+        transform: scale(.96);
+    }
+
+    to {
+        transform: scale(1.04);
+    }
+}
+
+@keyframes subscribeReveal {
+    0% {
+        opacity: 0;
+
+        transform:
+            translateY(35px)
+            scale(.8);
+
+        filter: blur(12px);
+    }
+
+    60% {
+        opacity: 1;
+
+        transform:
+            translateY(-5px)
+            scale(1.05);
+
+        filter: blur(0);
+    }
+
+    100% {
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+}
+
+@keyframes gamingRoomIn {
+    0% {
+        transform: scale(1.08);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+
+@keyframes monitorReveal {
+    0% {
+        opacity: 0;
+
+        transform:
+            translateY(35px)
+            scale(.75);
+
+        filter: blur(10px);
+    }
+
+    70% {
+        opacity: 1;
+
+        transform:
+            translateY(-4px)
+            scale(1.03);
+
+        filter: blur(0);
+    }
+
+    100% {
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+
+        filter: blur(0);
+    }
+}
+
+@keyframes monitorLeftReveal {
+    0% {
+        opacity: 0;
+        transform:
+            perspective(500px)
+            rotateY(12deg)
+            translateY(35px)
+            scale(.75);
+        filter: blur(10px);
+    }
+
+    70% {
+        opacity: 1;
+        transform:
+            perspective(500px)
+            rotateY(12deg)
+            translateY(-4px)
+            scale(1.03);
+        filter: blur(0);
+    }
+
+    100% {
+        opacity: 1;
+        transform:
+            perspective(500px)
+            rotateY(12deg)
+            translateY(0)
+            scale(1);
+    }
+}
+
+@keyframes monitorCenterReveal {
+    0% {
+        opacity: 0;
+
+        transform:
+            translateX(-50%)
+            translateY(35px)
+            scale(.75);
+
+        filter: blur(10px);
+    }
+
+    70% {
+        opacity: 1;
+
+        transform:
+            translateX(-50%)
+            translateY(-4px)
+            scale(1.03);
+
+        filter: blur(0);
+    }
+
+    100% {
+        opacity: 1;
+
+        transform:
+            translateX(-50%)
+            translateY(0)
+            scale(1);
+
+        filter: blur(0);
+    }
+}
+
+@keyframes monitorRightReveal {
+    0% {
+        opacity: 0;
+
+        transform:
+            perspective(500px)
+            rotateY(-12deg)
+            translateY(35px)
+            scale(.75);
+
+        filter: blur(10px);
+    }
+
+    70% {
+        opacity: 1;
+
+        transform:
+            perspective(500px)
+            rotateY(-12deg)
+            translateY(-4px)
+            scale(1.03);
+
+        filter: blur(0);
+    }
+
+    100% {
+        opacity: 1;
+
+        transform:
+            perspective(500px)
+            rotateY(-12deg)
+            translateY(0)
+            scale(1);
+
+        filter: blur(0);
+    }
+}
+
+@keyframes chairReveal {
+    0% {
+        opacity: 0;
+
+        transform:
+            translateX(-50%)
+            translateY(60px)
+            scale(.8);
+
+        filter: blur(8px);
+    }
+
+    70% {
+        opacity: 1;
+
+        transform:
+            translateX(-50%)
+            translateY(-4px)
+            scale(1.03);
+
+        filter: blur(0);
+    }
+
+    100% {
+        opacity: 1;
+
+        transform:
+            translateX(-50%)
+            translateY(0)
+            scale(1);
+    }
+}
+
+@keyframes hackerReveal {
+    0% {
+        opacity: 0;
+
+        transform:
+            translateX(-50%)
+            translateY(50px)
+            scale(.55);
+
+        filter: blur(12px);
+    }
+
+    65% {
+        opacity: 1;
+
+        transform:
+            translateX(-50%)
+            translateY(-5px)
+            scale(.75);
+
+        filter: blur(0);
+    }
+
+    100% {
+        opacity: 1;
+
+        transform:
+            translateX(-50%)
+            translateY(0)
+            scale(.72);
+
+        filter: blur(0);
+    }
+}
+
+@keyframes screenGlow {
+    from {
+        filter: brightness(.75);
+        opacity: .8;
+    }
+
+    to {
+        filter: brightness(1.25);
+        opacity: 1;
+    }
+}
+
+@keyframes roomGlow {
+    from {
+        opacity: .55;
+        transform: translateX(-50%) scale(.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(-50%) scale(1.08);
+    }
+}
+
+@keyframes hackerRim {
+    from {
+        opacity: .45;
+
+        filter:
+            blur(.5px)
+            drop-shadow(0 0 5px #4b62ff);
+    }
+
+    to {
+        opacity: 1;
+
+        filter:
+            blur(.5px)
+            drop-shadow(0 0 14px #4b62ff);
+    }
+}
+
+@keyframes finalLogoReveal {
+    0% {
+        opacity: 0;
+
+        transform:
+            scale(.25)
+            rotate(-8deg);
+
+        filter:
+            blur(18px)
+            brightness(2);
+    }
+
+    35% {
+        opacity: 1;
+
+        transform:
+            scale(1.12)
+            rotate(2deg);
+
+        filter:
+            blur(0)
+            brightness(1.7);
+    }
+
+    55% {
+        transform:
+            scale(.94)
+            rotate(-1deg);
+    }
+
+    75% {
+        transform:
+            scale(1.04)
+            rotate(0);
+    }
+
+    100% {
+        opacity: 1;
+
+        transform:
+            scale(1)
+            rotate(0);
+
+        filter:
+            blur(0)
+            brightness(1);
+    }
+}
+
+@keyframes finalLightning {
+    0% {
+        opacity: 0;
+    }
+
+    8% {
+        opacity: .9;
+    }
+
+    12% {
+        opacity: .15;
+    }
+
+    25% {
+        opacity: .7;
+    }
+
+    35% {
+        opacity: .1;
+    }
+
+    55% {
+        opacity: .5;
+    }
+
+    100% {
+        opacity: .15;
+    }
+}
+
+/* =========================================
+   EPIC GAMING HACKER IMAGE
+========================================= */
+
+.gaming-hacker {
+    position: absolute;
+
+    left: 50%;
+    bottom: 0;
+
+    transform: translateX(-50%);
+
+    width: 420px;
+    height: auto;
+
+    z-index: 20;
+
+    object-fit: contain;
+
+    pointer-events: none;
+}
+/* =========================================
+   EPIC HACKER GAMING SCENE
+========================================= */
+
+.scene-gaming {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    background: #000;
+}
+/* =========================================
+   MUSIC SYNC VISUAL IMPACT
+   ========================================= */
+
+body.music-hit {
+    filter: brightness(1.15);
+}
+
+body.music-major-hit {
+    filter: brightness(1.35) contrast(1.15);
+}
+
+/* =========================================
+   CAMERA + MUSIC REACTIVE TRANSFORM
+========================================= */
+
+#video {
+
+    transform:
+        translate(
+            var(--camera-x, 0px),
+            var(--camera-y, 0px)
+        )
+        scale(
+            var(--camera-zoom, 1)
+        );
+
+    transform-origin: center center;
+}
+
+/* -----------------------------------------
+   NORMAL MUSIC HIT
+----------------------------------------- */
+
+body.music-hit #video {
+    filter:
+        brightness(1.12)
+        saturate(1.15);
+}
+
+
+/* -----------------------------------------
+   MAJOR MUSIC HIT
+----------------------------------------- */
+
+body.music-major-hit #video {
+    filter:
+        brightness(1.28)
+        saturate(1.3)
+        contrast(1.08);
+}
+
+
+/* -----------------------------------------
+   MAJOR HIT FLASH
+----------------------------------------- */
+
+body.music-major-hit::after {
+
+    content: "";
+
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(255,255,255,.12);
+
+    pointer-events: none;
+
+    z-index: 9999;
+
+}
+/* =========================================
+   MUSIC REACTIVE FLASH
+========================================= */
+
+#video::after {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    background: #fff;
+
+    opacity:
+        calc(
+            var(--music-flash, 0) * 0.16
+        );
+
+    pointer-events: none;
+
+    z-index: 9998;
+
+    mix-blend-mode: screen;
+
+}
+
+/* =========================================
+   MUSIC GLITCH
+========================================= */
+
+#video {
+
+    --music-glitch: 0;
+
+}
+
+body.music-major-hit #video {
+
+    animation:
+        musicMajorGlitch
+        0.12s
+        steps(2)
+        both;
+
+}
+@keyframes musicMajorGlitch {
+
+    0% {
+
+        transform:
+            translate(
+                var(--camera-x, 0px),
+                var(--camera-y, 0px)
+            )
+            scale(
+                var(--camera-zoom, 1)
+            );
+
+    }
+
+    25% {
+
+        transform:
+            translate(
+                5px,
+                -3px
+            )
+            scale(
+                calc(
+                    var(--camera-zoom, 1) + .012
+                )
+            );
+
+    }
+
+    50% {
+
+        transform:
+            translate(
+                -4px,
+                3px
+            )
+            scale(
+                var(--camera-zoom, 1)
+            );
+
+    }
+
+    75% {
+
+        transform:
+            translate(
+                3px,
+                2px
+            )
+            scale(
+                calc(
+                    var(--camera-zoom, 1) + .008
+                )
+            );
+
+    }
+
+    100% {
+
+        transform:
+            translate(
+                var(--camera-x, 0px),
+                var(--camera-y, 0px)
+            )
+            scale(
+                var(--camera-zoom, 1)
+            );
+
+    }
+
+}
+/* =========================================
+   FULL-SCREEN HACKER GAMING BACKGROUND
+========================================= */
+
+
+/* =========================================
+   FULL HACKER IMAGE — NO CROP
+========================================= */
+
+.scene-gaming {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    overflow: hidden;
+
+    background: #000;
+}
+
+
+
+/* Hide every old coded gaming element */
+.scene-gaming > *:not(.gaming-full-image) {
+    display: none !important;
+}
+
+/* =========================================================
+   SCENE 5 — YOUTUBE CLICK TARGET
+   CLEAN PROFESSIONAL CENTER VERSION
+========================================================= */
+
+.scene-mouse {
+    position: absolute !important;
+
+    inset: 0 !important;
+
+    width: 100% !important;
+    height: 100% !important;
+
+    overflow: hidden !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    z-index: 10;
+}
+
+
+/* =========================================================
+   TARGET CONTAINER
+   ALWAYS LOCKED TO SCREEN CENTER
+========================================================= */
+
+.scene-mouse .target {
+    position: absolute !important;
+
+    left: 50% !important;
+    top: 50% !important;
+
+    width: min(780px, 72vw, 72vh) !important;
+    height: min(780px, 72vw, 72vh) !important;
+
+    margin: 0 !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    transform:
+        translate(-50%, -50%)
+        scale(1) !important;
+
+    transform-origin: center center !important;
+
+    z-index: 20;
+}
+
+
+/* =========================================================
+   TARGET RINGS
+   ALL RINGS SHARE EXACT SAME CENTER
+========================================================= */
+
+.scene-mouse .target-ring {
+    position: absolute !important;
+
+    left: 50% !important;
+    top: 50% !important;
+
+    margin: 0 !important;
+
+    border-radius: 50% !important;
+
+    transform:
+        translate(-50%, -50%)
+        scale(1) !important;
+
+    transform-origin: center center !important;
+
+    pointer-events: none;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   OUTER RING
+========================================================= */
+
+.scene-mouse .target-ring:nth-child(1) {
+
+    width: 100% !important;
+    height: 100% !important;
+
+}
+
+
+/* =========================================================
+   MIDDLE RING
+========================================================= */
+
+.scene-mouse .target-ring:nth-child(2) {
+
+    width: 64% !important;
+    height: 64% !important;
+
+}
+
+
+/* =========================================================
+   INNER RING
+========================================================= */
+
+.scene-mouse .target-ring:nth-child(3) {
+
+    width: 28% !important;
+    height: 28% !important;
+
+}
+
+
+/* =========================================================
+   TARGET REVEAL
+   CENTER POSITION IS NEVER LOST
+========================================================= */
+
+@keyframes targetReveal {
+
+    0% {
+
+        opacity: 0;
+
+        transform:
+            translate(-50%, -50%)
+            scale(.25)
+            rotate(-90deg);
+
+        filter:
+            blur(15px)
+            brightness(2);
+
+    }
+
+
+    25% {
+
+        opacity: 1;
+
+        transform:
+            translate(-50%, -50%)
+            scale(1.12)
+            rotate(8deg);
+
+        filter:
+            blur(0)
+            brightness(1.5);
+
+    }
+
+
+    45% {
+
+        opacity: 1;
+
+        transform:
+            translate(-50%, -50%)
+            scale(.94)
+            rotate(-3deg);
+
+    }
+
+
+    65% {
+
+        transform:
+            translate(-50%, -50%)
+            scale(1.04)
+            rotate(0deg);
+
+    }
+
+
+    100% {
+
+        opacity: 1;
+
+        transform:
+            translate(-50%, -50%)
+            scale(1)
+            rotate(0deg);
+
+        filter:
+            blur(0)
+            brightness(1);
+
+    }
+
+}
+
+
+/* =========================================================
+   PROFESSIONAL RING PULSE
+   PULSE HAPPENS FROM CENTER ONLY
+========================================================= */
+
+@keyframes ringPulse {
+
+    0% {
+
+        transform:
+            translate(-50%, -50%)
+            scale(.96);
+
+        opacity: .85;
+
+    }
+
+
+    50% {
+
+        transform:
+            translate(-50%, -50%)
+            scale(1.08);
+
+        opacity: .55;
+
+    }
+
+
+    100% {
+
+        transform:
+            translate(-50%, -50%)
+            scale(.96);
+
+        opacity: .85;
+
+    }
+
+}
+
+
+/* =========================================================
+   OUTER RING ANIMATION
+========================================================= */
+
+.scene-mouse .target-ring:nth-child(1) {
+
+    animation:
+        ringPulse
+        2s
+        ease-in-out
+        infinite;
+
+}
+
+
+/* =========================================================
+   MIDDLE RING ANIMATION
+========================================================= */
+
+.scene-mouse .target-ring:nth-child(2) {
+
+    animation:
+        ringPulse
+        2s
+        ease-in-out
+        infinite;
+
+    animation-delay: .25s;
+
+}
+
+
+/* =========================================================
+   INNER RING ANIMATION
+========================================================= */
+
+.scene-mouse .target-ring:nth-child(3) {
+
+    animation:
+        ringPulse
+        2s
+        ease-in-out
+        infinite;
+
+    animation-delay: .5s;
+
+}
+
+
+/* =========================================================
+   YOUTUBE LOGO — INNER CIRCLE KE ANDAR
+========================================================= */
+
+.scene-mouse .youtube-logo-target {
+
+    position: absolute !important;
+
+    left: 50% !important;
+    top: 50% !important;
+
+    /*
+       INNER CIRCLE SE CHHOTA
+    */
+    width: min(115px, 14vw, 14vh) !important;
+
+    height: auto !important;
+
+    margin: 0 !important;
+
+    transform:
+        translate(-50%, -50%) !important;
+
+    z-index: 25 !important;
+
+    pointer-events: none !important;
+
+    object-fit: contain;
+
+    /*
+       Black ko visually blend karne ki koshish
+    */
+    mix-blend-mode: screen;
+
+    filter:
+        drop-shadow(0 0 7px rgba(255,255,255,.5))
+        drop-shadow(0 0 14px rgba(255,0,0,.35));
+
+}
+
+/* =========================================================
+   CLICK ARROW
+   LOCKED RELATIVE TO CENTER
+========================================================= */
+
+/* =========================================================
+   SCENE 5 — ARROW FINAL SIZE + YOUTUBE CLICK POSITION
+========================================================= */
+
+.scene-mouse .target-arrow {
+
+    position: absolute !important;
+
+    /*
+       Arrow ka KNOCK / TIP
+       YouTube logo ke center par rahega
+    */
+    left: calc(50% - 28px) !important;
+    top: calc(50% + 28px) !important;
+
+    right: auto !important;
+    bottom: auto !important;
+
+    margin: 0 !important;
+
+    /*
+       Arrow ko chhota aur proportional rakho
+    */
+    font-size: 48px !important;
+
+    line-height: 1 !important;
+
+    width: auto !important;
+    height: auto !important;
+
+    transform:
+        translate(-50%, -50%)
+        rotate(-45deg) !important;
+
+    transform-origin: center center !important;
+
+    z-index: 30 !important;
+
+    pointer-events: none !important;
+
+    color: white !important;
+
+    text-shadow:
+        0 0 6px rgba(255,255,255,.95),
+        0 0 14px rgba(0,140,255,.75) !important;
+
+}
+
+
+/* =========================================================
+   YOUTUBE LOGO — KEEP IT ABOVE RINGS
+========================================================= */
+
+.scene-mouse .youtube-logo-target {
+
+    position: absolute !important;
+
+    left: 50% !important;
+    top: 50% !important;
+
+    width: 150px !important;
+    height: auto !important;
+
+    transform:
+        translate(-50%, -50%) !important;
+
+    z-index: 25 !important;
+
+    pointer-events: none !important;
+
+}
+/* =========================================
+   GAMESTORM LEGENDS
+   MUSIC REACTIVE VISUALS V2
+   ========================================= */
+
+/* -----------------------------------------
+   MUSIC ENERGY / MOMENTUM
+----------------------------------------- */
+
+#video {
+
+    --music-energy: 0;
+    --music-intensity: 0;
+    --music-density: 0;
+    --music-momentum: 0;
+    --music-build: 0;
+    --music-impact: 0;
+
+}
+
+
+/* -----------------------------------------
+   BUILD = CINEMATIC TENSION
+----------------------------------------- */
+
+#video {
+
+    filter:
+        brightness(
+            calc(
+                1 +
+                var(--music-build) * 0.035
+            )
+        )
+        saturate(
+            calc(
+                1 +
+                var(--music-momentum) * 0.08
+            )
+        );
+
+}
+
+
+/* -----------------------------------------
+   MUSIC DENSITY
+   Adds subtle visual pressure
+----------------------------------------- */
+
+#video::before {
+
+    content: "";
+
+    position: absolute;
+
+    inset: -2%;
+
+    pointer-events: none;
+
+    z-index: 9996;
+
+    background:
+        radial-gradient(
+            circle at center,
+            transparent 45%,
+            rgba(0,0,0,.28) 100%
+        );
+
+    opacity:
+        calc(
+            var(--music-density) * 0.35
+        );
+
+}
+
+
+/* -----------------------------------------
+   IMPACT VIGNETTE
+----------------------------------------- */
+
+#video::after {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    z-index: 9997;
+
+    background:
+        radial-gradient(
+            circle at center,
+            transparent 35%,
+            rgba(0,0,0,.45) 100%
+        );
+
+    opacity:
+        calc(
+            var(--music-impact) * 0.28
+        );
+
+}
+
+
+/* -----------------------------------------
+   BUILD = SLIGHT CINEMATIC SCALE
+----------------------------------------- */
+
+body[data-music-section="BUILD"] #video {
+
+    transform:
+        translate(
+            var(--camera-x, 0px),
+            var(--camera-y, 0px)
+        )
+        scale(
+            calc(
+                var(--camera-zoom, 1) +
+                var(--music-build) * 0.012
+            )
+        );
+
+}
+
+
+/* -----------------------------------------
+   PEAK SECTIONS
+----------------------------------------- */
+
+body[data-music-section="FIRST_PEAK"] #video,
+body[data-music-section="MAIN_PEAK"] #video,
+body[data-music-section="SECOND_PEAK"] #video,
+body[data-music-section="FINAL"] #video {
+
+    filter:
+        brightness(
+            calc(
+                1 +
+                var(--music-impact) * 0.08
+            )
+        )
+        saturate(
+            calc(
+                1 +
+                var(--music-energy) * 0.18
+            )
+        )
+        contrast(
+            calc(
+                1 +
+                var(--music-impact) * 0.08
+            )
+        );
+
+}
+
+
+/* -----------------------------------------
+   MAJOR MUSIC IMPACT
+----------------------------------------- */
+
+body.music-major-hit #video {
+
+    filter:
+        brightness(
+            calc(
+                1.28 +
+                var(--music-impact) * 0.18
+            )
+        )
+        saturate(
+            calc(
+                1.30 +
+                var(--music-impact) * 0.20
+            )
+        )
+        contrast(
+            calc(
+                1.08 +
+                var(--music-impact) * 0.12
+            )
+        );
+
+}
+
+
+/* -----------------------------------------
+   HIGH MOMENTUM
+----------------------------------------- */
+
+body[data-music-section="MAIN_PEAK"] {
+
+    --music-cinematic-pressure:
+        var(--music-momentum);
+
+}
+
+
+/* -----------------------------------------
+   EMOTION STATES
+----------------------------------------- */
+
+body[data-music-emotion="dark"] {
+    --music-emotion-intensity: .25;
+}
+
+body[data-music-emotion="tension"] {
+    --music-emotion-intensity: .55;
+}
+
+body[data-music-emotion="impact"] {
+    --music-emotion-intensity: .75;
+}
+
+body[data-music-emotion="cyber"] {
+    --music-emotion-intensity: .60;
+}
+
+body[data-music-emotion="aggressive"] {
+    --music-emotion-intensity: .90;
+}
+
+body[data-music-emotion="epic"] {
+    --music-emotion-intensity: .95;
+}
+
+body[data-music-emotion="cinematic"] {
+    --music-emotion-intensity: 1;
+}
+
+
+/* =========================================
+   GAMESTORM LEGENDS
+   MUSIC REACTIVE VISUALS V2
+   ========================================= */
+
+/* -----------------------------------------
+   MUSIC ENERGY / MOMENTUM
+----------------------------------------- */
+
+#video {
+
+    --music-energy: 0;
+    --music-intensity: 0;
+    --music-density: 0;
+    --music-momentum: 0;
+    --music-build: 0;
+    --music-impact: 0;
+
+}
+
+
+/* -----------------------------------------
+   BUILD = CINEMATIC TENSION
+----------------------------------------- */
+
+#video {
+
+    filter:
+        brightness(
+            calc(
+                1 +
+                var(--music-build) * 0.035
+            )
+        )
+        saturate(
+            calc(
+                1 +
+                var(--music-momentum) * 0.08
+            )
+        );
+
+}
+
+
+/* -----------------------------------------
+   MUSIC DENSITY
+   Adds subtle visual pressure
+----------------------------------------- */
+
+#video::before {
+
+    content: "";
+
+    position: absolute;
+
+    inset: -2%;
+
+    pointer-events: none;
+
+    z-index: 9996;
+
+    background:
+        radial-gradient(
+            circle at center,
+            transparent 45%,
+            rgba(0,0,0,.28) 100%
+        );
+
+    opacity:
+        calc(
+            var(--music-density) * 0.35
+        );
+
+}
+
+
+/* -----------------------------------------
+   IMPACT VIGNETTE
+----------------------------------------- */
+
+#video::after {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    z-index: 9997;
+
+    background:
+        radial-gradient(
+            circle at center,
+            transparent 35%,
+            rgba(0,0,0,.45) 100%
+        );
+
+    opacity:
+        calc(
+            var(--music-impact) * 0.28
+        );
+
+}
+
+
+/* -----------------------------------------
+   BUILD = SLIGHT CINEMATIC SCALE
+----------------------------------------- */
+
+body[data-music-section="BUILD"] #video {
+
+    transform:
+        translate(
+            var(--camera-x, 0px),
+            var(--camera-y, 0px)
+        )
+        scale(
+            calc(
+                var(--camera-zoom, 1) +
+                var(--music-build) * 0.012
+            )
+        );
+
+}
+
+
+/* -----------------------------------------
+   PEAK SECTIONS
+----------------------------------------- */
+
+body[data-music-section="FIRST_PEAK"] #video,
+body[data-music-section="MAIN_PEAK"] #video,
+body[data-music-section="SECOND_PEAK"] #video,
+body[data-music-section="FINAL"] #video {
+
+    filter:
+        brightness(
+            calc(
+                1 +
+                var(--music-impact) * 0.08
+            )
+        )
+        saturate(
+            calc(
+                1 +
+                var(--music-energy) * 0.18
+            )
+        )
+        contrast(
+            calc(
+                1 +
+                var(--music-impact) * 0.08
+            )
+        );
+
+}
+
+
+/* -----------------------------------------
+   MAJOR MUSIC IMPACT
+----------------------------------------- */
+
+body.music-major-hit #video {
+
+    filter:
+        brightness(
+            calc(
+                1.28 +
+                var(--music-impact) * 0.18
+            )
+        )
+        saturate(
+            calc(
+                1.30 +
+                var(--music-impact) * 0.20
+            )
+        )
+        contrast(
+            calc(
+                1.08 +
+                var(--music-impact) * 0.12
+            )
+        );
+
+}
+
+
+/* -----------------------------------------
+   HIGH MOMENTUM
+----------------------------------------- */
+
+body[data-music-section="MAIN_PEAK"] {
+
+    --music-cinematic-pressure:
+        var(--music-momentum);
+
+}
+
+
+/* -----------------------------------------
+   EMOTION STATES
+----------------------------------------- */
+
+body[data-music-emotion="dark"] {
+    --music-emotion-intensity: .25;
+}
+
+body[data-music-emotion="tension"] {
+    --music-emotion-intensity: .55;
+}
+
+body[data-music-emotion="impact"] {
+    --music-emotion-intensity: .75;
+}
+
+body[data-music-emotion="cyber"] {
+    --music-emotion-intensity: .60;
+}
+
+body[data-music-emotion="aggressive"] {
+    --music-emotion-intensity: .90;
+}
+
+body[data-music-emotion="epic"] {
+    --music-emotion-intensity: .95;
+}
+
+body[data-music-emotion="cinematic"] {
+    --music-emotion-intensity: 1;
+}
+

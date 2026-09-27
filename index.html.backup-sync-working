@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<link rel="icon" href="data:,">
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>GameStorm Legends</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div id="video">
+
+    <!-- GLOBAL BACKGROUND -->
+    <div class="bg"></div>
+
+    <div class="scanlines"></div>
+
+
+    <!-- =====================================
+         SCENE 1 — INTRO
+    ====================================== -->
+
+    <section class="scene scene-intro">
+
+        <!-- Hacker gaming room -->
+        <div class="hacker-background"></div>
+
+
+        <!-- Blue / purple lightning asset -->
+        <div class="intro-lightning"></div>
+
+
+        <!-- Neon border -->
+        <div class="neon-border"></div>
+
+
+        <!-- Vertical channel information -->
+        <div class="intro-channel">
+
+            <div class="channel-url">
+                youtube.com/@GameStormLegends
+            </div>
+
+            <div class="channel-follow">
+                FOLLOW FOR EPIC GAMING VIDEOS
+            </div>
+
+        </div>
+
+
+        <!-- Hacker lightning flashes -->
+        <div class="lightning lightning-1"></div>
+        <div class="lightning lightning-2"></div>
+
+
+        <!-- GameStorm logo -->
+        <div class="intro-logo">
+
+            <span>GAMESTORM</span>
+
+            <span>LEGENDS</span>
+
+        </div>
+
+
+        <!-- Energy / particles -->
+        <div class="intro-particles"></div>
+
+
+        <!-- Black transition -->
+        <div class="intro-blackout"></div>
+
+
+        <!-- Purple energy section -->
+        <div class="intro-energy"></div>
+
+
+        <!-- Pointing hand -->
+        <img
+            class="intro-hand"
+            src="assets/hand.png"
+            alt=""
+        >
+
+    </section>
+
+
+
+    <!-- =====================================
+         SCENE 2 — PLZ LIKE
+    ====================================== -->
+
+    <section class="scene scene-like">
+
+        <h1 class="like-text">
+            PLZ LIKE
+        </h1>
+
+        <div class="energy"></div>
+
+    </section>
+
+
+
+    <!-- =====================================
+         SCENE 3 — SHARE
+    ====================================== -->
+
+    <section class="scene scene-share">
+
+        <h1 class="share-text">
+            SHARE
+        </h1>
+
+        <div class="burst"></div>
+
+    </section>
+
+
+
+    <!-- =====================================
+         SCENE 4 — YOUTUBE
+    ====================================== -->
+
+    <section class="scene scene-youtube">
+
+        <div class="youtube-circle">
+
+            <div class="youtube-button">
+
+                <div class="play"></div>
+
+            </div>
+
+        </div>
+
+
+        <div class="subscribe-text">
+
+            <strong>
+                AND SUBSCRIBE
+            </strong>
+
+            <span>
+                TO MY YT CHANNEL
+            </span>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================
+         SCENE 5 — MOUSE / TARGET
+    ====================================== -->
+
+    <section class="scene scene-mouse">
+
+        <div class="target">
+
+            <div class="target-ring"></div>
+
+            <div class="target-ring"></div>
+
+            <div class="target-ring"></div>
+
+            <div class="target-arrow">
+                ➤
+            </div>
+
+        </div>
+
+
+        <div class="mouse"></div>
+
+    </section>
+
+
+
+    <!-- =====================================
+         SCENE 6 — GAMING
+    ====================================== -->
+
+   <!-- =====================================
+     SCENE 6 — GAMING
+====================================== -->
+
+<section class="scene scene-gaming">
+
+    <!-- GAMING SCENE GLOW -->
+    <div class="gaming-glow"></div>
+
+    <!-- BACK WALL -->
+    <div class="gaming-wall"></div>
+
+    <!-- LEFT MONITOR -->
+    <div class="monitor monitor-left">
+        <div class="monitor-screen"></div>
+        <div class="monitor-stand"></div>
+    </div>
+
+    <!-- CENTER MONITOR -->
+    <div class="monitor monitor-center">
+        <div class="monitor-screen"></div>
+        <div class="monitor-stand"></div>
+    </div>
+
+    <!-- RIGHT MONITOR -->
+    <div class="monitor monitor-right">
+        <div class="monitor-screen"></div>
+        <div class="monitor-stand"></div>
+    </div>
+
+    <!-- DESK -->
+    <div class="gaming-desk"></div>
+
+    <!-- KEYBOARD -->
+    <div class="keyboard"></div>
+
+    <!-- CHAIR -->
+    <div class="chair"></div>
+
+    <!-- EPIC HACKER IMAGE -->
+    <img
+        class="gaming-hacker"
+        src="assets/hacker.png"
+        alt="Epic Hacker"
+    >
+
+</section>
+
+<div class="player"></div>
+    <!-- =====================================
+         FINAL — GAMESTORM LEGENDS
+    ====================================== -->
+
+    <section class="scene scene-final">
+
+        <div class="final-lightning"></div>
+
+
+        <div class="logo">
+
+            <span>
+                GAMESTORM
+            </span>
+
+            <span>
+                LEGENDS
+            </span>
+
+        </div>
+
+    </section>
+
+
+</div>
+
+<script type="module" src="script.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,1130 @@
+// =========================================
+// GAMESTORM LEGENDS — MAIN SCRIPT V4 FINAL
+// VISUAL + AUDIO MASTER SYNC
+// EXACT 29.15 SECOND INTRO
+// WAV / AUDIO CLOCK = MASTER CLOCK
+// =========================================
+
+import { AudioEngine } from "./audio/audio.js";
+import { MusicEngine } from "./audio/music.js";
+import { SFXEngine } from "./audio/sfx.js";
+import { AudioTimeline } from "./audio/timeline.js";
+import { MUSIC_MAP } from "./musicMap.js";
+import { MUSIC_TIMELINE } from "./musicTimeline.js";
+
+
+// =========================================
+// AUDIO ENGINE
+// =========================================
+
+const audio =
+    new AudioEngine();
+
+
+// =========================================
+// MUSIC ENGINE
+// =========================================
+
+const music =
+    new MusicEngine(
+        audio
+    );
+
+
+// =========================================
+// SFX ENGINE
+// =========================================
+
+const sfx =
+    new SFXEngine(
+        audio
+    );
+
+
+// =========================================
+// AUDIO TIMELINE
+// =========================================
+
+const audioTimeline =
+    new AudioTimeline(
+        audio,
+        music,
+        sfx
+    );
+
+
+// =========================================
+// VIDEO ELEMENT
+// =========================================
+
+const video =
+    document.getElementById(
+        "video"
+    );
+
+
+// =========================================
+// SCENES
+// =========================================
+
+const scenes =
+    document.querySelectorAll(
+        ".scene"
+    );
+
+
+// =========================================
+// MASTER DURATION
+// =========================================
+
+const INTRO_DURATION = 29.15;
+
+const VIDEO_DURATION =
+    INTRO_DURATION;
+
+
+// =========================================
+// VISUAL TIMELINE
+// =========================================
+
+// =========================================
+// MUSIC-DRIVEN VISUAL TIMELINE
+// =========================================
+// Real MP3 = master clock
+// MUSIC_MAP = visual timing source
+// =========================================
+
+const timeline = [
+
+    // =====================================
+    // SCENE 1 — DARK HACKER INTRO
+    // 0.000 → 10.844
+    // =====================================
+
+    {
+        scene: 0,
+        start: 0.000,
+        end: 10.844
+    },
+
+
+    // =====================================
+    // SCENE 2 — BUILD / LIKE
+    // 10.844 → 23.011
+    // =====================================
+
+    {
+        scene: 1,
+        start: 10.844,
+        end: 23.011
+    },
+
+
+    // =====================================
+    // SCENE 3 — FIRST PEAK / SHARE
+    // 23.011 → 32.450
+    // =====================================
+
+    {
+        scene: 2,
+        start: 23.011,
+        end: 32.450
+    },
+
+
+    // =====================================
+    // SCENE 4 — CYBER TRANSITION / YOUTUBE
+    // 32.450 → 42.040
+    // =====================================
+
+    {
+        scene: 3,
+        start: 32.450,
+        end: 42.040
+    },
+
+
+    // =====================================
+    // SCENE 5 — MAIN PEAK / TARGET
+    // 42.040 → 58.248
+    // =====================================
+
+    {
+        scene: 4,
+        start: 42.040,
+        end: 58.248
+    },
+
+
+    // =====================================
+    // SCENE 6 — SECOND BUILD / GAMING
+    // 58.248 → 68.441
+    // =====================================
+
+    {
+        scene: 5,
+        start: 58.248,
+        end: 68.441
+    },
+
+
+    // =====================================
+    // SCENE 6 — SECOND PEAK / GAMING
+    // 68.441 → 80.000
+    // =====================================
+
+    {
+        scene: 5,
+        start: 68.441,
+        end: 80.000
+    },
+
+
+    // =====================================
+    // FINAL — GAMESTORM LEGENDS
+    // 80.000 → 92.447
+    // =====================================
+
+    {
+        scene: 6,
+        start: 80.000,
+        end: MUSIC_MAP.duration
+    }
+
+];
+
+// =========================================
+// STATE
+// =========================================
+
+let videoStarted =
+    false;
+
+let videoFinished =
+    false;
+
+let animationFrame =
+    null;
+
+let finishing =
+    false;
+
+    // =========================================
+// MUSIC VISUAL EVENT ENGINE
+// =========================================
+
+let lastMusicEventIndex = -1;
+
+let musicPulse = 0;
+let musicEnergy = 0;
+let musicOnset = false;
+let musicBeat = false;
+
+let startInProgress =
+    false;
+
+
+// =========================================
+// CLEAR SCENES
+// =========================================
+
+function clearScenes() {
+
+    scenes.forEach(
+        scene => {
+
+            scene.classList.remove(
+                "active"
+            );
+
+        }
+    );
+
+}
+
+
+// =========================================
+// GET ACTIVE SCENE
+// =========================================
+
+function getActiveScene(
+    time
+) {
+
+    for (
+        const item of timeline
+    ) {
+
+        if (
+            time >= item.start &&
+            time < item.end
+        ) {
+
+            return item.scene;
+
+        }
+
+    }
+
+    return -1;
+
+}
+
+
+// =========================================
+// UPDATE SCENES
+// =========================================
+
+function updateScenes(
+    activeScene
+) {
+
+    scenes.forEach(
+        (scene, index) => {
+
+            if (
+                index === activeScene
+            ) {
+
+                scene.classList.add(
+                    "active"
+                );
+
+            } else {
+
+                scene.classList.remove(
+                    "active"
+                );
+
+            }
+
+        }
+    );
+
+}
+
+
+// =========================================
+// GET MASTER AUDIO TIME
+// =========================================
+// IMPORTANT:
+// Audio / WAV clock is the ONLY master clock.
+// Visual timeline follows this clock.
+// =========================================
+
+function getMasterTime() {
+
+    if (
+        !audio ||
+        !audio.started ||
+        typeof audio.getTime !== "function"
+    ) {
+
+        return 0;
+
+    }
+
+
+    const time =
+        Number(
+            audio.getTime()
+        );
+
+
+    if (
+        !Number.isFinite(time)
+    ) {
+
+        return 0;
+
+    }
+
+
+    return Math.min(
+        Math.max(
+            time,
+            0
+        ),
+        VIDEO_DURATION
+    );
+
+}
+
+// =========================================
+// MUSIC EVENT PROCESSOR
+// =========================================
+
+function updateMusicEvents(currentTime) {
+
+    if (
+        !Array.isArray(MUSIC_TIMELINE) ||
+        MUSIC_TIMELINE.length === 0
+    ) {
+        return;
+    }
+
+
+    // -----------------------------------------
+    // Find latest music event
+    // -----------------------------------------
+
+    let eventIndex = -1;
+
+    for (
+        let i = 0;
+        i < MUSIC_TIMELINE.length;
+        i++
+    ) {
+
+        if (
+            MUSIC_TIMELINE[i].time <= currentTime
+        ) {
+
+            eventIndex = i;
+
+        } else {
+
+            break;
+
+        }
+
+    }
+
+
+    // -----------------------------------------
+    // No event yet
+    // -----------------------------------------
+
+    if (eventIndex < 0) {
+
+        musicEnergy = 0;
+        musicOnset = false;
+        musicBeat = false;
+
+        return;
+
+    }
+
+
+    const event =
+        MUSIC_TIMELINE[eventIndex];
+
+
+    // -----------------------------------------
+    // Update continuous music values
+    // -----------------------------------------
+
+    musicEnergy =
+        Number(event.energy) || 0;
+
+    musicBeat =
+        Number(event.beat) === 1;
+
+
+    // -----------------------------------------
+    // Detect NEW event
+    // -----------------------------------------
+
+    if (
+        eventIndex !== lastMusicEventIndex
+    ) {
+
+        lastMusicEventIndex =
+            eventIndex;
+
+
+        musicOnset =
+            Number(event.onset) === 1;
+
+
+        // -------------------------------------
+        // Pulse strength
+        // -------------------------------------
+
+        musicPulse =
+            Math.min(
+                musicEnergy * 1.35,
+                1
+            );
+
+
+        // -------------------------------------
+        // Debug
+        // -------------------------------------
+
+        if (musicOnset) {
+
+            console.log(
+                "🎵 MUSIC EVENT",
+                event.time.toFixed(3),
+                "energy:",
+                event.energy.toFixed(3),
+                "beat:",
+                event.beat
+            );
+
+        }
+
+    } else {
+
+        musicOnset =
+            false;
+
+    }
+
+
+    // -----------------------------------------
+    // Natural pulse decay
+    // -----------------------------------------
+
+    musicPulse *= 0.92;
+
+}
+
+// =========================================
+// STOP EVERYTHING
+// =========================================
+
+function stopGameStorm() {
+
+    if (finishing) {
+        return;
+    }
+
+
+    finishing =
+        true;
+
+
+    // =====================================
+    // STOP VISUAL LOOP
+    // =====================================
+
+    if (
+        animationFrame !== null
+    ) {
+
+        cancelAnimationFrame(
+            animationFrame
+        );
+
+    }
+
+
+    animationFrame =
+        null;
+
+
+    // =====================================
+    // STOP AUDIO TIMELINE
+    // =====================================
+
+    if (
+        audioTimeline &&
+        typeof audioTimeline.stop === "function"
+    ) {
+
+        audioTimeline.stop();
+
+    }
+
+
+    // =====================================
+    // STOP AUDIO ENGINE
+    // =====================================
+
+    if (
+        audio &&
+        typeof audio.stop === "function"
+    ) {
+
+        audio.stop();
+
+    }
+
+
+    // =====================================
+    // VISUAL CLEANUP
+    // =====================================
+
+    clearScenes();
+
+
+    if (video) {
+
+        video.classList.remove(
+            "video-started"
+        );
+
+    }
+
+
+    // =====================================
+    // FINAL STATE
+    // =====================================
+
+    videoStarted =
+        false;
+
+    videoFinished =
+        true;
+
+
+    console.log(
+        "🏁 GAMESTORM LEGENDS — INTRO FINISHED"
+    );
+
+    console.log(
+    "⏱️ FINAL TIME:",
+    VIDEO_DURATION,
+    "SECONDS"
+);
+
+}
+
+
+// =========================================
+// VISUAL MASTER LOOP
+// =========================================
+
+function animate() {
+
+    if (
+        !videoStarted ||
+        videoFinished ||
+        finishing
+    ) {
+
+        return;
+
+    }
+
+
+    // =====================================
+    // AUDIO MASTER CLOCK
+    // =====================================
+
+    const currentTime =
+    getMasterTime();
+
+
+// =====================================
+// MUSIC-DRIVEN VISUAL EVENTS
+// =====================================
+
+updateMusicEvents(
+    currentTime
+);
+
+
+    // =====================================
+    // EXACT END CHECK
+    // =====================================
+
+    if (
+        currentTime >=
+        VIDEO_DURATION
+    ) {
+
+        stopGameStorm();
+
+        return;
+
+    }
+
+
+    // =====================================
+    // ACTIVE SCENE
+    // =====================================
+
+    const activeScene =
+        getActiveScene(
+            currentTime
+        );
+
+
+    // =====================================
+    // UPDATE VISUAL SCENES
+    // =====================================
+
+    updateScenes(
+        activeScene
+    );
+
+
+    // =====================================
+    // NEXT FRAME
+    // =====================================
+
+    animationFrame =
+        requestAnimationFrame(
+            animate
+        );
+
+}
+
+
+// =========================================
+// START GAMESTORM
+// =========================================
+
+async function startGameStorm() {
+
+    // =====================================
+    // DON'T START WHILE RUNNING
+    // =====================================
+
+    if (
+        videoStarted ||
+        videoFinished ||
+        finishing ||
+        startInProgress
+    ) {
+
+        return;
+
+    }
+
+
+    // =====================================
+    // LOCK START IMMEDIATELY
+    // Prevent double-click / duplicate start
+    // =====================================
+
+    startInProgress =
+        true;
+
+
+    console.log(
+        "🖱️ GAMESTORM START CLICK"
+    );
+
+
+    try {
+
+        // =================================
+        // START AUDIO ENGINE
+        // =================================
+
+        await audio.start();
+
+
+        if (
+            !audio.started
+        ) {
+
+            console.warn(
+                "⚠️ Audio engine did not start."
+            );
+
+            return;
+
+        }
+
+
+        console.log(
+            "🔊 AudioContext:",
+            audio.ctx
+                ? audio.ctx.state
+                : "unknown"
+        );
+
+// =================================
+// INITIALIZE SFX
+// =================================
+
+sfx.init();
+
+
+// =================================
+// INITIALIZE MUSIC
+// =================================
+
+music.init();
+
+
+// =================================
+// RESET STATE
+// =================================
+
+videoFinished =
+    false;
+
+finishing =
+    false;
+
+
+// =================================
+// RESET AUDIO TIMELINE
+// =================================
+
+if (
+    typeof audioTimeline.reset === "function"
+) {
+
+    audioTimeline.reset();
+
+}
+
+
+// =================================
+// CLEAR OLD SCENES
+// =================================
+
+clearScenes();
+
+
+// =================================
+// START WAV MUSIC
+// =================================
+
+const musicStarted =
+    await audio.playMusic();
+
+if (!musicStarted) {
+
+    console.warn(
+        "⚠️ GameStorm WAV music could not start."
+    );
+
+    return;
+
+}
+
+console.log(
+    "🎵 GAMESTORM WAV MUSIC STARTED"
+);
+
+
+// =================================
+// START STATE
+// =================================
+
+videoStarted =
+    true;
+
+startInProgress =
+    false;
+
+// =================================
+// START CSS VIDEO STATE
+// =================================
+
+if (video) {
+
+    video.classList.add(
+        "video-started"
+    );
+
+}
+
+
+// =================================
+// START FIRST SCENE
+// =================================
+
+updateScenes(0);
+
+
+// =================================
+// START AUDIO TIMELINE
+// =================================
+
+audioTimeline.start();
+
+
+// =================================
+// START VISUAL LOOP
+// =================================
+
+animationFrame =
+    requestAnimationFrame(
+        animate
+    );
+
+
+        // =================================
+        // LOG
+        // =================================
+
+        console.log(
+            "🔊 GAMESTORM SFX V3 TIMELINE STARTED"
+        );
+
+        console.log(
+            "🎬 GAMESTORM VISUAL TIMELINE STARTED"
+        );
+
+        console.log(
+            "🎯 AUDIO CLOCK = MASTER CLOCK"
+        );
+
+        console.log(
+            "⏱️ MASTER DURATION:",
+            VIDEO_DURATION,
+            "SECONDS"
+        );
+
+    } catch (error) {
+
+        console.error(
+            "❌ GAMESTORM START ERROR:",
+            error
+        );
+
+
+        // =================================
+        // CLEAN FAILED START
+        // =================================
+
+        if (
+            audioTimeline &&
+            typeof audioTimeline.stop === "function"
+        ) {
+
+            audioTimeline.stop();
+
+        }
+
+
+        if (
+            audio &&
+            typeof audio.stop === "function"
+        ) {
+
+            audio.stop();
+
+        }
+
+
+    videoStarted =
+    false;
+
+videoFinished =
+    false;
+
+finishing =
+    false;
+
+startInProgress =
+    false;
+
+
+        clearScenes();
+
+
+        if (video) {
+
+            video.classList.remove(
+                "video-started"
+            );
+
+        }
+
+    }
+
+}
+
+
+// =========================================
+// RESET GAMESTORM
+// =========================================
+
+function resetGameStorm() {
+
+    console.log(
+        "🔄 GAMESTORM RESET"
+    );
+
+
+    // =====================================
+    // STOP VISUAL LOOP
+    // =====================================
+
+    if (
+        animationFrame !== null
+    ) {
+
+        cancelAnimationFrame(
+            animationFrame
+        );
+
+    }
+
+
+    animationFrame =
+        null;
+
+
+    // =====================================
+    // STOP AUDIO TIMELINE
+    // =====================================
+
+    if (
+        audioTimeline &&
+        typeof audioTimeline.stop === "function"
+    ) {
+
+        audioTimeline.stop();
+
+    }
+
+
+    // =====================================
+    // STOP AUDIO ENGINE
+    // =====================================
+
+    if (
+        audio &&
+        typeof audio.stop === "function"
+    ) {
+
+        audio.stop();
+
+    }
+
+
+    // =====================================
+    // CLEAR VISUALS
+    // =====================================
+
+    clearScenes();
+
+
+    if (video) {
+
+        video.classList.remove(
+            "video-started"
+        );
+
+    }
+
+
+    // =====================================
+    // RESET STATE
+    // =====================================
+
+   videoStarted =
+    false;
+
+videoFinished =
+    false;
+
+finishing =
+    false;
+
+startInProgress =
+    false;
+
+
+    // =====================================
+    // RESET AUDIO TIMELINE
+    // =====================================
+
+    if (
+        typeof audioTimeline.reset === "function"
+    ) {
+
+        audioTimeline.reset();
+
+    }
+
+
+    console.log(
+        "✅ GAMESTORM INTRO READY"
+    );
+
+}
+
+
+// =========================================
+// USER CLICK
+// =========================================
+// First click = start.
+// After finish, click does nothing.
+// Press Escape to reset, then click again.
+// =========================================
+
+document.addEventListener(
+    "click",
+    startGameStorm
+);
+
+
+// =========================================
+// ESCAPE = RESET
+// =========================================
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key === "Escape"
+        ) {
+
+            resetGameStorm();
+
+        }
+
+    }
+);
+
+
+// =========================================
+// VISIBILITY HANDLING
+// =========================================
+
+document.addEventListener(
+    "visibilitychange",
+    () => {
+
+        if (
+            document.hidden
+        ) {
+
+            console.log(
+                "⏸️ GAMESTORM TAB HIDDEN"
+            );
+
+            return;
+
+        }
+
+
+        if (
+            videoStarted &&
+            !videoFinished &&
+            !finishing
+        ) {
+
+            console.log(
+                "▶️ GAMESTORM TAB VISIBLE"
+            );
+
+        }
+
+    }
+);
+
+
+// =========================================
+// INITIAL STATE
+// =========================================
+
+clearScenes();
+
+
+console.log(
+    "🚀 GAMESTORM LEGENDS V4 FINAL READY"
+);
+
+console.log(
+    "🎯 REAL MP3 / AUDIO CLOCK = MASTER"
+);
+
+console.log(
+    "⏱️ INTRO DURATION =",
+    VIDEO_DURATION,
+    "SECONDS"
+);

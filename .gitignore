@@ -1,0 +1,4 @@
+.venv/
+rendered-frames/
+*.backup
+*.before-*
