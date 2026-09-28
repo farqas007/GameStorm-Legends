@@ -55,6 +55,63 @@ const video =
 
 
 // =========================================
+// PLAY INTRO OVERLAY
+// =========================================
+//
+// The intro waits for one explicit click,
+// because browsers block unmuted autoplay
+// with sound. The button is the user gesture
+// the AudioContext needs, so the music
+// starts with sound through the normal
+// startGameStorm() flow.
+// =========================================
+
+const playIntroOverlay =
+    document.getElementById(
+        "play-intro-overlay"
+    );
+
+const playIntroButton =
+    document.getElementById(
+        "play-intro-button"
+    );
+
+
+function showPlayIntro() {
+
+    if (
+        !playIntroOverlay
+    ) {
+
+        return;
+
+    }
+
+    playIntroOverlay.classList.remove(
+        "play-intro-hidden"
+    );
+
+}
+
+
+function hidePlayIntro() {
+
+    if (
+        !playIntroOverlay
+    ) {
+
+        return;
+
+    }
+
+    playIntroOverlay.classList.add(
+        "play-intro-hidden"
+    );
+
+}
+
+
+// =========================================
 // SCENES
 // =========================================
 
@@ -1165,6 +1222,8 @@ async function startGameStorm() {
             startInProgress =
                 false;
 
+            showPlayIntro();
+
             return;
 
         }
@@ -1269,6 +1328,8 @@ async function startGameStorm() {
                 startInProgress =
                     false;
 
+                showPlayIntro();
+
                 return;
 
             }
@@ -1290,6 +1351,16 @@ async function startGameStorm() {
 
         startInProgress =
             false;
+
+
+        // =================================
+        // INTRO IS RUNNING
+        // =================================
+        //
+        // The Play Intro button has done its
+        // job, so it leaves the screen.
+
+        hidePlayIntro();
 
 
         // =================================
@@ -1422,6 +1493,13 @@ async function startGameStorm() {
         clearScenes();
 
 
+        // =================================
+        // NO INTRO, SO OFFER THE BUTTON
+        // =================================
+
+        showPlayIntro();
+
+
         if (
             video
         ) {
@@ -1443,197 +1521,46 @@ async function startGameStorm() {
 
 
 // =========================================
-// AUTOPLAY UNLOCK
+// PLAY INTRO BUTTON
 // =========================================
 //
-// The intro plays automatically. When the
-// browser only allowed a muted start, the
-// first real interaction turns the sound on.
-// No extra player, no extra UI, and the MP3
-// keeps running, so nothing desynchronises.
+// The intro does not autoplay. Browsers
+// block unmuted autoplay until the user
+// interacts with the page, so the intro
+// starts from this one explicit button.
+//
+// The click IS the user gesture, so the
+// AudioContext resumes and the MP3 starts
+// with sound through the existing
+// startGameStorm() flow. No second player,
+// no extra audio path, and the 92.447
+// second timeline is untouched.
 // =========================================
 
-let unlockArmed =
-    false;
-
-
-function armAudioUnlock() {
-
-    if (
-        unlockArmed
-    ) {
-
-        return;
-
-    }
-
-
-    unlockArmed =
-        true;
-
-
-    const unlock =
-        () => {
-
-            unlockArmed =
-                false;
-
-
-            audio.unlock().then(
-                unlocked => {
-
-                    if (!unlocked) {
-
-                        console.warn(
-                            "⚠️ GameStorm sound could not be unlocked."
-                        );
-
-                    }
-
-                }
-            );
-
-        };
-
-
-    for (
-        const eventName of [
-            "pointerdown",
-            "keydown",
-            "touchstart"
-        ]
-    ) {
-
-        document.addEventListener(
-            eventName,
-            unlock,
-            {
-                once: true,
-                capture: true
-            }
-        );
-
-    }
-
+function onPlayIntroClick() {
 
     console.log(
-        "👆 First interaction unlocks sound"
+        "▶️ PLAY INTRO CLICK"
     );
+
+
+    // startGameStorm() is the only entry
+    // point. It hides the button once the
+    // intro is really running, and it shows
+    // it again if the start failed.
+
+    startGameStorm();
 
 }
 
 
-// =========================================
-// AUTOPLAY
-// =========================================
-//
-// 1. Normal autoplay with sound.
-// 2. Muted autoplay, which browsers allow,
-//    then sound on first interaction.
-// 3. Nothing started, so the existing
-//    click-to-start intro stays in charge.
-// =========================================
+if (
+    playIntroButton
+) {
 
-async function autoplayGameStorm() {
-
-    // =====================================
-    // OFFLINE RENDER MODE
-    // =====================================
-    //
-    // The renderer drives every frame itself.
-
-    if (
-        typeof window !== "undefined" &&
-        window.__GAMESTORM_RENDER_MODE__ === true
-    ) {
-
-        return;
-
-    }
-
-
-    // =====================================
-    // 1 — NORMAL AUTOPLAY
-    // =====================================
-
-    await startGameStorm();
-
-
-    if (videoStarted) {
-
-        armAudioUnlock();
-
-
-        // =================================
-        // PLAYING ELEMENT, BLOCKED CONTEXT
-        // =================================
-        //
-        // A playing element does not prove the
-        // AudioContext may run. If it is still
-        // suspended the graph stays silent, so
-        // mute now and let the first interaction
-        // bring the sound in.
-        // =================================
-
-        if (
-            audio.ctx &&
-            audio.ctx.state !== "running"
-        ) {
-
-            audio.setMuted(true);
-
-        }
-
-
-        console.log(
-            "▶️ GAMESTORM INTRO AUTOPLAYED"
-        );
-
-        return;
-
-    }
-
-
-    // =====================================
-    // 2 — BLOCKED: MUTED AUTOPLAY
-    // =====================================
-
-    console.log(
-        "🔇 Unmuted autoplay blocked. Trying muted autoplay."
-    );
-
-
-    audio.setMuted(true);
-
-    await startGameStorm();
-
-
-    if (videoStarted) {
-
-        armAudioUnlock();
-
-
-        console.log(
-            "▶️ GAMESTORM INTRO AUTOPLAYED (MUTED)"
-        );
-
-        return;
-
-    }
-
-
-    // =====================================
-    // 3 — STILL BLOCKED
-    // =====================================
-    //
-    // Nothing is playing and no UI was added.
-    // The existing click-to-start intro runs.
-
-    audio.setMuted(false);
-
-
-    console.log(
-        "⏳ Autoplay unavailable. Click to start the intro."
+    playIntroButton.addEventListener(
+        "click",
+        onPlayIntroClick
     );
 
 }
@@ -1727,12 +1654,23 @@ function resetGameStorm() {
 
 
     // =====================================
+    // PLAY INTRO BUTTON BACK
+    // =====================================
+    //
+    // The intro is over, so the explicit
+    // start button is offered again.
+
+    showPlayIntro();
+
+
+    // =====================================
     // RESTORE SOUND
     // =====================================
     //
-    // A manual start always follows a real
-    // user gesture, so a muted autoplay must
-    // not stay muted after a reset.
+    // The Play Intro click is a real user
+    // gesture, so the next start always has
+    // sound. Guarding the gain here keeps a
+    // reset from ever leaving it muted.
 
     if (
         typeof audio.setMuted === "function"
@@ -1773,8 +1711,8 @@ function resetGameStorm() {
 // =========================================
 // USER CLICK
 // =========================================
-// First click = START
-// After finish = NOTHING
+// Play Intro button = START (real gesture)
+// Any other click = START as well
 // Escape = RESET
 // =========================================
 
@@ -1870,10 +1808,37 @@ console.log(
 
 
 // =========================================
-// AUTOPLAY THE INTRO
+// SHOW THE PLAY INTRO BUTTON
 // =========================================
+//
+// The intro never starts on its own. It
+// waits for the explicit button, so the
+// first real user gesture unlocks the
+// audio and the music starts with sound.
 
-autoplayGameStorm();
+if (
+    typeof window !== "undefined" &&
+    window.__GAMESTORM_RENDER_MODE__ === true
+) {
+
+    // The offline exporter starts the
+    // intro itself, one frame at a time.
+
+    hidePlayIntro();
+
+    console.log(
+        "🎬 OFFLINE RENDER: PLAY INTRO BUTTON HIDDEN"
+    );
+
+} else {
+
+    showPlayIntro();
+
+    console.log(
+        "▶️ PRESS 'PLAY INTRO' TO START"
+    );
+
+}
 
 
 window.startGameStorm = startGameStorm;

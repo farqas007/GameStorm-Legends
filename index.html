@@ -230,6 +230,40 @@
     </section>
 
 
+    <!-- =====================================
+         PLAY INTRO — EXPLICIT USER GESTURE
+    ====================================== -->
+
+    <!--
+        Browsers block unmuted autoplay, so the
+        intro does not start on its own. This
+        button gives the player one explicit
+        click, and that click is a real user
+        gesture, so the audio starts with sound.
+    -->
+
+    <div
+        class="play-intro-overlay"
+        id="play-intro-overlay"
+    >
+
+        <button
+            type="button"
+            class="play-intro-button"
+            id="play-intro-button"
+            autofocus
+        >
+            ▶ Play Intro
+        </button>
+
+
+        <p class="play-intro-hint">
+            Sound starts with the intro · Esc to reset
+        </p>
+
+    </div>
+
+
 </div>
 
 <script type="module" src="script.js"></script>
