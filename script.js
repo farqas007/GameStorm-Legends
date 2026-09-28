@@ -1443,6 +1443,203 @@ async function startGameStorm() {
 
 
 // =========================================
+// AUTOPLAY UNLOCK
+// =========================================
+//
+// The intro plays automatically. When the
+// browser only allowed a muted start, the
+// first real interaction turns the sound on.
+// No extra player, no extra UI, and the MP3
+// keeps running, so nothing desynchronises.
+// =========================================
+
+let unlockArmed =
+    false;
+
+
+function armAudioUnlock() {
+
+    if (
+        unlockArmed
+    ) {
+
+        return;
+
+    }
+
+
+    unlockArmed =
+        true;
+
+
+    const unlock =
+        () => {
+
+            unlockArmed =
+                false;
+
+
+            audio.unlock().then(
+                unlocked => {
+
+                    if (!unlocked) {
+
+                        console.warn(
+                            "⚠️ GameStorm sound could not be unlocked."
+                        );
+
+                    }
+
+                }
+            );
+
+        };
+
+
+    for (
+        const eventName of [
+            "pointerdown",
+            "keydown",
+            "touchstart"
+        ]
+    ) {
+
+        document.addEventListener(
+            eventName,
+            unlock,
+            {
+                once: true,
+                capture: true
+            }
+        );
+
+    }
+
+
+    console.log(
+        "👆 First interaction unlocks sound"
+    );
+
+}
+
+
+// =========================================
+// AUTOPLAY
+// =========================================
+//
+// 1. Normal autoplay with sound.
+// 2. Muted autoplay, which browsers allow,
+//    then sound on first interaction.
+// 3. Nothing started, so the existing
+//    click-to-start intro stays in charge.
+// =========================================
+
+async function autoplayGameStorm() {
+
+    // =====================================
+    // OFFLINE RENDER MODE
+    // =====================================
+    //
+    // The renderer drives every frame itself.
+
+    if (
+        typeof window !== "undefined" &&
+        window.__GAMESTORM_RENDER_MODE__ === true
+    ) {
+
+        return;
+
+    }
+
+
+    // =====================================
+    // 1 — NORMAL AUTOPLAY
+    // =====================================
+
+    await startGameStorm();
+
+
+    if (videoStarted) {
+
+        armAudioUnlock();
+
+
+        // =================================
+        // PLAYING ELEMENT, BLOCKED CONTEXT
+        // =================================
+        //
+        // A playing element does not prove the
+        // AudioContext may run. If it is still
+        // suspended the graph stays silent, so
+        // mute now and let the first interaction
+        // bring the sound in.
+        // =================================
+
+        if (
+            audio.ctx &&
+            audio.ctx.state !== "running"
+        ) {
+
+            audio.setMuted(true);
+
+        }
+
+
+        console.log(
+            "▶️ GAMESTORM INTRO AUTOPLAYED"
+        );
+
+        return;
+
+    }
+
+
+    // =====================================
+    // 2 — BLOCKED: MUTED AUTOPLAY
+    // =====================================
+
+    console.log(
+        "🔇 Unmuted autoplay blocked. Trying muted autoplay."
+    );
+
+
+    audio.setMuted(true);
+
+    await startGameStorm();
+
+
+    if (videoStarted) {
+
+        armAudioUnlock();
+
+
+        console.log(
+            "▶️ GAMESTORM INTRO AUTOPLAYED (MUTED)"
+        );
+
+        return;
+
+    }
+
+
+    // =====================================
+    // 3 — STILL BLOCKED
+    // =====================================
+    //
+    // Nothing is playing and no UI was added.
+    // The existing click-to-start intro runs.
+
+    audio.setMuted(false);
+
+
+    console.log(
+        "⏳ Autoplay unavailable. Click to start the intro."
+    );
+
+}
+
+
+// =========================================
 // RESET GAMESTORM
 // =========================================
 
@@ -1527,6 +1724,23 @@ function resetGameStorm() {
 
     currentScene =
         0;
+
+
+    // =====================================
+    // RESTORE SOUND
+    // =====================================
+    //
+    // A manual start always follows a real
+    // user gesture, so a muted autoplay must
+    // not stay muted after a reset.
+
+    if (
+        typeof audio.setMuted === "function"
+    ) {
+
+        audio.setMuted(false);
+
+    }
 
 
     // =====================================
@@ -1653,6 +1867,14 @@ console.log(
     VIDEO_DURATION,
     "SECONDS"
 );
+
+
+// =========================================
+// AUTOPLAY THE INTRO
+// =========================================
+
+autoplayGameStorm();
+
 
 window.startGameStorm = startGameStorm;
 window.resetGameStorm = resetGameStorm;
